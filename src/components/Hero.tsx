@@ -36,7 +36,7 @@ export const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button variant="hero" size="lg" className="group bg-white text-primary hover:bg-white/90">
+            <Button variant="hero" size="lg" className="group bg-primary text-primary-foreground hover:bg-primary/90">
               Start Recycling
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
