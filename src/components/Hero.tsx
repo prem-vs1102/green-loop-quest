@@ -61,11 +61,11 @@ export const Hero = () => {
             ].map((stat, index) => (
               <div
                 key={index}
-                className="glass-effect backdrop-blur-md bg-white/10 p-6 rounded-2xl border border-white/20"
+                className="backdrop-blur-md bg-white/95 dark:bg-card p-6 rounded-2xl border border-white/30 shadow-eco"
               >
-                <stat.icon className="w-8 h-8 text-white mx-auto mb-2" />
-                <div className="text-3xl font-bold text-white">{stat.value}</div>
-                <div className="text-sm text-white/80">{stat.label}</div>
+                <stat.icon className="w-8 h-8 text-primary mx-auto mb-2" />
+                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
           </div>
