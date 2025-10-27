@@ -38,16 +38,16 @@ export const CTA = () => {
                 <Button
                   variant="hero"
                   size="lg"
-                  className="group bg-white text-primary hover:bg-white/90"
+                  className="group bg-white text-primary hover:bg-white/95 shadow-eco-lg font-semibold"
                 >
                   Get Started Free
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Button
                 variant="outline"
                 size="lg"
-                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary"
+                className="border-2 border-white bg-white/10 text-white hover:bg-white hover:text-primary font-semibold backdrop-blur-sm"
               >
                 Contact Sales
               </Button>
