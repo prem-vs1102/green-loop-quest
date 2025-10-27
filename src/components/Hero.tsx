@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Recycle, Award, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 
 export const Hero = () => {
@@ -36,10 +37,12 @@ export const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button variant="hero" size="lg" className="group bg-primary text-primary-foreground hover:bg-primary/90">
-              Start Recycling
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/auth">
+              <Button variant="hero" size="lg" className="group bg-primary text-primary-foreground hover:bg-primary/90">
+                Start Recycling
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="lg"

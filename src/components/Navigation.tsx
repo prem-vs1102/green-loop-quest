@@ -1,6 +1,7 @@
 import { Leaf, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,12 +29,16 @@ export const Navigation = () => {
             <a href="#impact" className="text-foreground/80 hover:text-primary transition-colors">
               Impact
             </a>
-            <Button variant="outline" size="sm">
-              Login
-            </Button>
-            <Button variant="hero" size="sm">
-              Get Started
-            </Button>
+            <Link to="/auth">
+              <Button variant="outline" size="sm">
+                Login
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="hero" size="sm">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -70,12 +75,16 @@ export const Navigation = () => {
               Impact
             </a>
             <div className="flex flex-col gap-2 pt-2">
-              <Button variant="outline" size="sm" className="w-full">
-                Login
-              </Button>
-              <Button variant="hero" size="sm" className="w-full">
-                Get Started
-              </Button>
+              <Link to="/auth" className="w-full">
+                <Button variant="outline" size="sm" className="w-full">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/auth" className="w-full">
+                <Button variant="hero" size="sm" className="w-full">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         )}
