@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          created_at: string
+          ewaste_type: Database["public"]["Enums"]["ewaste_type"]
+          id: string
+          image_url: string
+          recycler_address: string
+          recycler_lat: number
+          recycler_lng: number
+          recycler_name: string
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          user_id: string
+          validation_message: string | null
+        }
+        Insert: {
+          created_at?: string
+          ewaste_type: Database["public"]["Enums"]["ewaste_type"]
+          id?: string
+          image_url: string
+          recycler_address: string
+          recycler_lat: number
+          recycler_lng: number
+          recycler_name: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id: string
+          validation_message?: string | null
+        }
+        Update: {
+          created_at?: string
+          ewaste_type?: Database["public"]["Enums"]["ewaste_type"]
+          id?: string
+          image_url?: string
+          recycler_address?: string
+          recycler_lat?: number
+          recycler_lng?: number
+          recycler_name?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id?: string
+          validation_message?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,7 +94,22 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      ewaste_type:
+        | "laptop"
+        | "printer"
+        | "mobile"
+        | "tablet"
+        | "monitor"
+        | "keyboard"
+        | "mouse"
+        | "other"
+      order_status:
+        | "pending"
+        | "validated"
+        | "rejected"
+        | "collected"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +236,25 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ewaste_type: [
+        "laptop",
+        "printer",
+        "mobile",
+        "tablet",
+        "monitor",
+        "keyboard",
+        "mouse",
+        "other",
+      ],
+      order_status: [
+        "pending",
+        "validated",
+        "rejected",
+        "collected",
+        "completed",
+        "cancelled",
+      ],
+    },
   },
 } as const
