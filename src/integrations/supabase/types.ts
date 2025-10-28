@@ -16,7 +16,9 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
+          brand: string
           created_at: string
+          estimated_amount: number
           ewaste_type: Database["public"]["Enums"]["ewaste_type"]
           id: string
           image_url: string
@@ -30,7 +32,9 @@ export type Database = {
           validation_message: string | null
         }
         Insert: {
+          brand?: string
           created_at?: string
+          estimated_amount?: number
           ewaste_type: Database["public"]["Enums"]["ewaste_type"]
           id?: string
           image_url: string
@@ -44,7 +48,9 @@ export type Database = {
           validation_message?: string | null
         }
         Update: {
+          brand?: string
           created_at?: string
+          estimated_amount?: number
           ewaste_type?: Database["public"]["Enums"]["ewaste_type"]
           id?: string
           image_url?: string
