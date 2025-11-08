@@ -12,10 +12,14 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl, ewasteType } = await req.json();
+    const { imageUrls, ewasteType, selectedBrand } = await req.json();
 
-    if (!imageUrl || !ewasteType) {
-      throw new Error('Image URL and e-waste type are required');
+    if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0 || !ewasteType || !selectedBrand) {
+      throw new Error('Image URLs (array), e-waste type, and brand are required');
+    }
+
+    if (imageUrls.length > 2) {
+      throw new Error('Maximum 2 images allowed');
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -23,7 +27,32 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Validating image for e-waste type:', ewasteType);
+    console.log('Validating images for e-waste type:', ewasteType, 'brand:', selectedBrand);
+
+    // Build message content array with text and multiple images
+    const messageContent: any[] = [
+      {
+        type: 'text',
+        text: `You are an advanced e-waste validation system. Analyze the provided image(s) and determine:
+1. If they show a ${ewasteType}
+2. If the device brand matches "${selectedBrand}"
+
+CRITICAL INSTRUCTIONS:
+- Respond with ONLY a valid JSON object (no markdown, no code blocks)
+- Use this EXACT format: {"isValid": true/false, "confidence": 0-100, "reason": "brief explanation", "detectedBrand": "brand name or 'unknown'"}
+- Set isValid to TRUE only if BOTH conditions are met: correct device type AND correct brand
+- If brand doesn't match, set isValid to FALSE and explain the mismatch in reason
+- Be strict with validation`
+      }
+    ];
+
+    // Add all images to the message content array
+    imageUrls.forEach((url: string) => {
+      messageContent.push({
+        type: 'image_url',
+        image_url: { url }
+      });
+    });
 
     // Call Lovable AI for image validation
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -37,18 +66,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `You are an e-waste validation system. Analyze this image and determine if it shows a ${ewasteType}. Respond with ONLY a JSON object in this exact format: {"isValid": true/false, "confidence": 0-100, "reason": "brief explanation"}. Be strict - only validate if you're confident the image shows the specified e-waste type.`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: imageUrl
-                }
-              }
-            ]
+            content: messageContent
           }
         ],
       }),
@@ -63,10 +81,19 @@ serve(async (req) => {
     const data = await response.json();
     console.log('AI response:', data);
 
-    const content = data.choices?.[0]?.message?.content;
+    let content = data.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('No response from AI');
     }
+
+    // Remove markdown code blocks if present
+    content = content.trim();
+    if (content.startsWith('```json')) {
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    } else if (content.startsWith('```')) {
+      content = content.replace(/```\n?/g, '');
+    }
+    content = content.trim();
 
     // Parse the JSON response
     const validation = JSON.parse(content);

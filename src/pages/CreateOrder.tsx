@@ -91,8 +91,8 @@ const CreateOrder = () => {
   const [selectedType, setSelectedType] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedRecycler, setSelectedRecycler] = useState<any>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
@@ -114,22 +114,45 @@ const CreateOrder = () => {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Limit to 2 images
+    const selectedFiles = files.slice(0, 2);
+    
+    if (files.length > 2) {
+      toast({
+        title: "Too many images",
+        description: "Maximum 2 images allowed. Only the first 2 will be used.",
+        variant: "destructive",
+      });
+    }
+
+    setImageFiles(selectedFiles);
+
+    // Generate previews
+    const previews: string[] = [];
+    let loadedCount = 0;
+
+    selectedFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        previews.push(reader.result as string);
+        loadedCount++;
+        
+        if (loadedCount === selectedFiles.length) {
+          setImagePreviews(previews);
+        }
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
   const handleSubmit = async () => {
-    if (!imageFile || !selectedType || !selectedBrand || !selectedRecycler) {
+    if (imageFiles.length === 0 || !selectedType || !selectedBrand || !selectedRecycler) {
       toast({
         title: "Missing information",
-        description: "Please complete all steps",
+        description: "Please complete all steps and upload at least 1 image",
         variant: "destructive",
       });
       return;
@@ -142,29 +165,41 @@ const CreateOrder = () => {
       
       if (!user) throw new Error('User not authenticated');
 
-      // Upload image to Supabase Storage with user folder
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, imageFile);
+      // Upload all images to Supabase Storage with user folder
+      const uploadedUrls: string[] = [];
+      
+      for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}_${i}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+        if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+        
+        uploadedUrls.push(publicUrl);
+      }
 
-      // Validate image with AI
+      // Validate images with AI
       setValidating(true);
       const { data: validationData, error: validationError } = await supabase.functions
         .invoke('validate-ewaste-image', {
-          body: { imageUrl: publicUrl, ewasteType: selectedType }
+          body: { 
+            imageUrls: uploadedUrls, 
+            ewasteType: selectedType,
+            selectedBrand: selectedBrand
+          }
         });
 
       if (validationError) throw validationError;
 
-      const { isValid, confidence, reason } = validationData;
+      const { isValid, confidence, reason, detectedBrand } = validationData;
       
       const estimatedAmount = calculateEstimatedAmount(selectedType, selectedBrand);
 
@@ -175,13 +210,13 @@ const CreateOrder = () => {
           user_id: user.id,
           ewaste_type: selectedType as any,
           brand: selectedBrand,
-          image_url: publicUrl,
+          image_url: uploadedUrls[0], // Store first image URL
           recycler_name: selectedRecycler.name,
           recycler_address: selectedRecycler.address,
           recycler_lat: selectedRecycler.lat,
           recycler_lng: selectedRecycler.lng,
           status: (isValid ? 'validated' : 'rejected') as any,
-          validation_message: `Confidence: ${confidence}%. ${reason}`,
+          validation_message: `Confidence: ${confidence}%. ${reason}. Detected brand: ${detectedBrand || 'unknown'}`,
           estimated_amount: estimatedAmount,
         }])
         .select()
@@ -195,7 +230,7 @@ const CreateOrder = () => {
       } else {
         toast({
           title: "Order Rejected",
-          description: `Order rejected: ${reason}`,
+          description: `${reason}${detectedBrand ? ` (Detected: ${detectedBrand})` : ''}`,
           variant: "destructive",
         });
         setTimeout(() => navigate('/dashboard'), 2000);
@@ -289,38 +324,49 @@ const CreateOrder = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    {imagePreview ? (
-                      <img src={imagePreview} alt="Preview" className="max-h-64 mx-auto rounded" />
+                    {imagePreviews.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {imagePreviews.map((preview, idx) => (
+                          <img 
+                            key={idx} 
+                            src={preview} 
+                            alt={`Preview ${idx + 1}`} 
+                            className="max-h-64 mx-auto rounded" 
+                          />
+                        ))}
+                      </div>
                     ) : (
                       <div>
                         <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                        <p className="text-muted-foreground">Click to upload or drag and drop</p>
+                        <p className="text-muted-foreground">Upload 1-2 images of your {selectedBrand} {selectedType}</p>
+                        <p className="text-xs text-muted-foreground mt-2">Multiple angles help with validation</p>
                       </div>
                     )}
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleImageChange}
                       className="hidden"
                       id="image-upload"
                     />
                     <label htmlFor="image-upload">
                       <Button variant="outline" className="mt-4" asChild>
-                        <span>Choose Image</span>
+                        <span>{imagePreviews.length > 0 ? "Change Images" : "Choose Images (Max 2)"}</span>
                       </Button>
                     </label>
                   </div>
 
                   <Button 
                     onClick={handleSubmit}
-                    disabled={!imageFile || uploading}
+                    disabled={imageFiles.length === 0 || uploading}
                     className="w-full"
                     size="lg"
                   >
                     {uploading || validating ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        {validating ? "Validating..." : "Uploading..."}
+                        {validating ? "AI Validating Images..." : "Uploading..."}
                       </>
                     ) : (
                       "Submit Order"

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Leaf, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { ReCaptcha } from "@/components/ReCaptcha";
 
 const signUpSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address").max(255),
@@ -36,6 +37,7 @@ const Auth = () => {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupName, setSignupName] = useState("");
   const [honeypot, setHoneypot] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -57,6 +59,15 @@ const Auth = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!recaptchaToken) {
+      toast({
+        title: "Verification required",
+        description: "Please complete the reCAPTCHA",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const validatedData = loginSchema.parse({
         email: loginEmail,
@@ -110,6 +121,15 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!recaptchaToken) {
+      toast({
+        title: "Verification required",
+        description: "Please complete the reCAPTCHA",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const validatedData = signUpSchema.parse({
@@ -237,10 +257,11 @@ const Auth = () => {
                     tabIndex={-1}
                     autoComplete="off"
                   />
+                  <ReCaptcha onChange={setRecaptchaToken} />
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={loading}
+                    disabled={loading || !recaptchaToken}
                   >
                     {loading ? (
                       <>
@@ -305,10 +326,11 @@ const Auth = () => {
                     tabIndex={-1}
                     autoComplete="off"
                   />
+                  <ReCaptcha onChange={setRecaptchaToken} />
                   <Button
                     type="submit"
                     className="w-full"
-                    disabled={loading}
+                    disabled={loading || !recaptchaToken}
                   >
                     {loading ? (
                       <>
