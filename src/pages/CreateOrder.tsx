@@ -108,6 +108,8 @@ const CreateOrder = () => {
   const [uploading, setUploading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [pickupDate, setPickupDate] = useState<Date | undefined>();
+  const [pickupSlot, setPickupSlot] = useState<string>("");
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
