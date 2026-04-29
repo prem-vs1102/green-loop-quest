@@ -485,6 +485,16 @@ const CreateOrder = () => {
                       "Submit Order"
                     )}
                   </Button>
+
+                  {(uploading || validating || progress > 0) && (
+                    <div className="space-y-2 animate-fade-in">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground font-medium">{progressLabel}</span>
+                        <span className="font-semibold text-primary">{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="h-3" />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
