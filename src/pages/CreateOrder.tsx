@@ -252,6 +252,9 @@ const CreateOrder = () => {
 
       if (insertError) throw insertError;
 
+      setProgress(100);
+      setProgressLabel("Done!");
+
       if (isValid && orderData) {
         setCreatedOrderId(orderData.id);
         setStep(6); // Move to receipt step
@@ -270,6 +273,8 @@ const CreateOrder = () => {
         description: "Failed to create order. Please try again.",
         variant: "destructive",
       });
+      setProgress(0);
+      setProgressLabel("");
     } finally {
       setUploading(false);
       setValidating(false);
