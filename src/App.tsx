@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import CreateOrder from "./pages/CreateOrder";
 import NotFound from "./pages/NotFound";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <div className="fixed top-3 left-3 z-[100]">
+          <ThemeToggle />
+        </div>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
