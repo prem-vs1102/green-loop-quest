@@ -74,6 +74,8 @@ const Dashboard = () => {
     const colors: Record<string, string> = {
       pending: "bg-yellow-500",
       validated: "bg-green-500",
+      scheduled: "bg-blue-400",
+      out_for_pickup: "bg-blue-600",
       rejected: "bg-red-500",
       collected: "bg-blue-500",
       completed: "bg-primary",
