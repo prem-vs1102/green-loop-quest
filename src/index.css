@@ -132,6 +132,11 @@ All colors MUST be HSL.
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
   }
+
+  .dark .glass-effect {
+    background: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--border));
+  }
   
   .animate-float {
     animation: float 6s ease-in-out infinite;
