@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Package, History, Leaf } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import OrderTracking from "@/components/OrderTracking";
 
 interface Order {
   id: string;
@@ -15,6 +16,11 @@ interface Order {
   status: string;
   recycler_name: string;
   created_at: string;
+  pickup_date?: string | null;
+  pickup_time_slot?: string | null;
+  tracking_number?: string | null;
+  estimated_amount?: number;
+  brand?: string;
 }
 
 const Dashboard = () => {
@@ -76,7 +82,7 @@ const Dashboard = () => {
     return colors[status] || "bg-gray-500";
   };
 
-  const pendingOrders = orders.filter(o => ["pending", "validated", "collected"].includes(o.status));
+  const pendingOrders = orders.filter(o => ["pending", "validated", "scheduled", "out_for_pickup", "collected"].includes(o.status));
   const completedOrders = orders.filter(o => ["completed", "cancelled", "rejected"].includes(o.status));
 
   return (
