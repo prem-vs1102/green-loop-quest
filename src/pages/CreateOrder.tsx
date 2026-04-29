@@ -163,10 +163,10 @@ const CreateOrder = () => {
   };
 
   const handleSubmit = async () => {
-    if (imageFiles.length === 0 || !selectedType || !selectedBrand || !selectedRecycler) {
+    if (imageFiles.length === 0 || !selectedType || !selectedBrand || !selectedRecycler || !pickupDate || !pickupSlot) {
       toast({
         title: "Missing information",
-        description: "Please complete all steps and upload at least 1 image",
+        description: "Please complete all steps including pickup scheduling and upload at least 1 image",
         variant: "destructive",
       });
       return;
@@ -224,14 +224,16 @@ const CreateOrder = () => {
           user_id: user.id,
           ewaste_type: selectedType as any,
           brand: selectedBrand,
-          image_url: uploadedUrls[0], // Store first image URL
+          image_url: uploadedUrls[0],
           recycler_name: selectedRecycler.name,
           recycler_address: selectedRecycler.address,
           recycler_lat: selectedRecycler.lat,
           recycler_lng: selectedRecycler.lng,
-          status: (isValid ? 'validated' : 'rejected') as any,
+          status: (isValid ? 'scheduled' : 'rejected') as any,
           validation_message: `Confidence: ${confidence}%. ${reason}. Detected brand: ${detectedBrand || 'unknown'}`,
           estimated_amount: estimatedAmount,
+          pickup_date: format(pickupDate, 'yyyy-MM-dd'),
+          pickup_time_slot: pickupSlot,
         }])
         .select()
         .single();
@@ -240,7 +242,7 @@ const CreateOrder = () => {
 
       if (isValid && orderData) {
         setCreatedOrderId(orderData.id);
-        setStep(5); // Move to receipt step
+        setStep(6); // Move to receipt step
       } else {
         toast({
           title: "Order Rejected",
