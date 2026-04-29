@@ -5,10 +5,22 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, Loader2, CalendarIcon, Clock } from "lucide-react";
 import RecyclerMap from "@/components/RecyclerMap";
 import OrderReceipt from "@/components/OrderReceipt";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+const PICKUP_SLOTS = [
+  "09:00 AM - 11:00 AM",
+  "11:00 AM - 01:00 PM",
+  "01:00 PM - 03:00 PM",
+  "03:00 PM - 05:00 PM",
+  "05:00 PM - 07:00 PM",
+];
 
 const ewasteTypes = [
   { value: "laptop", label: "Laptop", icon: "💻" },
