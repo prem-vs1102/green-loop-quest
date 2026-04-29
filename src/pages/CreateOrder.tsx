@@ -329,8 +329,88 @@ const CreateOrder = () => {
           </div>
         )}
 
-        {/* Step 4: Upload Image */}
+        {/* Step 4: Schedule Pickup */}
         {step === 4 && (
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Schedule Pickup</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle>Choose a date and time slot</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4" /> Pickup Date
+                  </p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full md:w-[280px] justify-start text-left font-normal",
+                          !pickupDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {pickupDate ? format(pickupDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pickupDate}
+                        onSelect={setPickupDate}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const max = new Date();
+                          max.setDate(max.getDate() + 30);
+                          return date < today || date > max;
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <Clock className="w-4 h-4" /> Time Slot
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {PICKUP_SLOTS.map((slot) => (
+                      <Card
+                        key={slot}
+                        onClick={() => setPickupSlot(slot)}
+                        className={cn(
+                          "cursor-pointer transition-all hover:shadow-md",
+                          pickupSlot === slot && "border-primary border-2 bg-primary/5"
+                        )}
+                      >
+                        <CardContent className="p-4 text-center font-medium">
+                          {slot}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full"
+                  disabled={!pickupDate || !pickupSlot}
+                  onClick={() => setStep(5)}
+                >
+                  Continue
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Step 5: Upload Image */}
+        {step === 5 && (
           <div>
             <h2 className="text-2xl font-semibold mb-4">Upload E-waste Image</h2>
             <Card>
@@ -339,7 +419,7 @@ const CreateOrder = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                     {imagePreviews.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">
                         {imagePreviews.map((preview, idx) => (
@@ -353,7 +433,7 @@ const CreateOrder = () => {
                       </div>
                     ) : (
                       <div>
-                        <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                        <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                         <p className="text-muted-foreground">Upload 1-2 images of your {selectedBrand} {selectedType}</p>
                         <p className="text-xs text-muted-foreground mt-2">Multiple angles help with validation</p>
                       </div>
@@ -394,8 +474,8 @@ const CreateOrder = () => {
           </div>
         )}
 
-        {/* Step 5: Order Receipt */}
-        {step === 5 && createdOrderId && (
+        {/* Step 6: Order Receipt */}
+        {step === 6 && createdOrderId && (
           <div>
             <OrderReceipt orderId={createdOrderId} />
           </div>
