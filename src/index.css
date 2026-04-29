@@ -97,13 +97,25 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-size: 17px;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.65;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    @apply leading-relaxed;
   }
 }
 
@@ -119,6 +131,11 @@ All colors MUST be HSL.
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .dark .glass-effect {
+    background: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--border));
   }
   
   .animate-float {

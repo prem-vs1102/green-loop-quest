@@ -22,11 +22,14 @@ export type Database = {
           ewaste_type: Database["public"]["Enums"]["ewaste_type"]
           id: string
           image_url: string
+          pickup_date: string | null
+          pickup_time_slot: string | null
           recycler_address: string
           recycler_lat: number
           recycler_lng: number
           recycler_name: string
           status: Database["public"]["Enums"]["order_status"]
+          tracking_number: string | null
           updated_at: string
           user_id: string
           validation_message: string | null
@@ -38,11 +41,14 @@ export type Database = {
           ewaste_type: Database["public"]["Enums"]["ewaste_type"]
           id?: string
           image_url: string
+          pickup_date?: string | null
+          pickup_time_slot?: string | null
           recycler_address: string
           recycler_lat: number
           recycler_lng: number
           recycler_name: string
           status?: Database["public"]["Enums"]["order_status"]
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
           validation_message?: string | null
@@ -54,11 +60,14 @@ export type Database = {
           ewaste_type?: Database["public"]["Enums"]["ewaste_type"]
           id?: string
           image_url?: string
+          pickup_date?: string | null
+          pickup_time_slot?: string | null
           recycler_address?: string
           recycler_lat?: number
           recycler_lng?: number
           recycler_name?: string
           status?: Database["public"]["Enums"]["order_status"]
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
           validation_message?: string | null
@@ -116,6 +125,8 @@ export type Database = {
         | "collected"
         | "completed"
         | "cancelled"
+        | "scheduled"
+        | "out_for_pickup"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +271,8 @@ export const Constants = {
         "collected",
         "completed",
         "cancelled",
+        "scheduled",
+        "out_for_pickup",
       ],
     },
   },

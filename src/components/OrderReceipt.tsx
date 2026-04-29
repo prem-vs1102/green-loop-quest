@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Download, Home } from "lucide-react";
+import { CheckCircle, Download, Home, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
+import OrderTracking from "@/components/OrderTracking";
 
 interface OrderReceiptProps {
   orderId: string;
@@ -128,6 +129,43 @@ const OrderReceipt = ({ orderId }: OrderReceiptProps) => {
                 <p className="text-sm">{order.recycler_address}</p>
               </div>
             </div>
+          </div>
+
+          <Separator />
+
+          {(order.pickup_date || order.pickup_time_slot) && (
+            <>
+              <div className="space-y-3">
+                <h3 className="font-semibold text-lg">Pickup Schedule</h3>
+                <div className="bg-secondary/50 rounded-lg p-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <CalendarIcon className="w-4 h-4" /> Date
+                    </p>
+                    <p className="font-semibold">
+                      {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : '—'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Clock className="w-4 h-4" /> Time Slot
+                    </p>
+                    <p className="font-semibold">{order.pickup_time_slot || '—'}</p>
+                  </div>
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          <div className="space-y-3">
+            <h3 className="font-semibold text-lg">Order Tracking</h3>
+            <OrderTracking
+              status={order.status}
+              pickupDate={order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : null}
+              pickupTimeSlot={order.pickup_time_slot}
+              trackingNumber={order.tracking_number}
+            />
           </div>
 
           <Separator />

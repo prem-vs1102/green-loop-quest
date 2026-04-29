@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Package, History, Leaf } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import OrderTracking from "@/components/OrderTracking";
 
 interface Order {
   id: string;
@@ -15,6 +16,11 @@ interface Order {
   status: string;
   recycler_name: string;
   created_at: string;
+  pickup_date?: string | null;
+  pickup_time_slot?: string | null;
+  tracking_number?: string | null;
+  estimated_amount?: number;
+  brand?: string;
 }
 
 const Dashboard = () => {
@@ -68,6 +74,8 @@ const Dashboard = () => {
     const colors: Record<string, string> = {
       pending: "bg-yellow-500",
       validated: "bg-green-500",
+      scheduled: "bg-blue-400",
+      out_for_pickup: "bg-blue-600",
       rejected: "bg-red-500",
       collected: "bg-blue-500",
       completed: "bg-primary",
@@ -76,7 +84,7 @@ const Dashboard = () => {
     return colors[status] || "bg-gray-500";
   };
 
-  const pendingOrders = orders.filter(o => ["pending", "validated", "collected"].includes(o.status));
+  const pendingOrders = orders.filter(o => ["pending", "validated", "scheduled", "out_for_pickup", "collected"].includes(o.status));
   const completedOrders = orders.filter(o => ["completed", "cancelled", "rejected"].includes(o.status));
 
   return (
@@ -127,19 +135,22 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Create New Order Button */}
-        <Button 
-          onClick={() => navigate("/create-order")}
-          size="lg"
-          className="mb-8 w-full md:w-auto"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Create New Order
-        </Button>
+        {/* Create New Order Button - Big & Centered */}
+        <div className="flex justify-center mb-12">
+          <Button
+            onClick={() => navigate("/create-order")}
+            size="lg"
+            variant="hero"
+            className="h-16 px-12 text-xl rounded-2xl shadow-eco-lg"
+          >
+            <Plus className="w-7 h-7 mr-3" />
+            Create New Order
+          </Button>
+        </div>
 
         {/* Active Orders */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Active Orders</h2>
+          <h2 className="text-3xl font-bold mb-6">Active Orders</h2>
           {loading ? (
             <p>Loading...</p>
           ) : pendingOrders.length === 0 ? (
@@ -149,22 +160,30 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-6">
               {pendingOrders.map((order) => (
-                <Card key={order.id}>
-                  <CardContent className="py-4">
-                    <div className="flex justify-between items-start">
+                <Card key={order.id} className="overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4 flex-wrap gap-3">
                       <div>
-                        <h3 className="font-semibold capitalize">{order.ewaste_type}</h3>
+                        <h3 className="text-xl font-semibold capitalize">
+                          {order.brand ? `${order.brand} ` : ""}{order.ewaste_type}
+                        </h3>
                         <p className="text-sm text-muted-foreground">{order.recycler_name}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(order.created_at).toLocaleDateString()}
+                          Placed {new Date(order.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <Badge className={getStatusColor(order.status)}>
-                        {order.status}
+                        {order.status.replace(/_/g, " ")}
                       </Badge>
                     </div>
+                    <OrderTracking
+                      status={order.status}
+                      pickupDate={order.pickup_date}
+                      pickupTimeSlot={order.pickup_time_slot}
+                      trackingNumber={order.tracking_number}
+                    />
                   </CardContent>
                 </Card>
               ))}

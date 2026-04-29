@@ -5,10 +5,22 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, Loader2, CalendarIcon, Clock } from "lucide-react";
 import RecyclerMap from "@/components/RecyclerMap";
 import OrderReceipt from "@/components/OrderReceipt";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+const PICKUP_SLOTS = [
+  "09:00 AM - 11:00 AM",
+  "11:00 AM - 01:00 PM",
+  "01:00 PM - 03:00 PM",
+  "03:00 PM - 05:00 PM",
+  "05:00 PM - 07:00 PM",
+];
 
 const ewasteTypes = [
   { value: "laptop", label: "Laptop", icon: "💻" },
@@ -96,6 +108,8 @@ const CreateOrder = () => {
   const [uploading, setUploading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [pickupDate, setPickupDate] = useState<Date | undefined>();
+  const [pickupSlot, setPickupSlot] = useState<string>("");
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
@@ -149,10 +163,10 @@ const CreateOrder = () => {
   };
 
   const handleSubmit = async () => {
-    if (imageFiles.length === 0 || !selectedType || !selectedBrand || !selectedRecycler) {
+    if (imageFiles.length === 0 || !selectedType || !selectedBrand || !selectedRecycler || !pickupDate || !pickupSlot) {
       toast({
         title: "Missing information",
-        description: "Please complete all steps and upload at least 1 image",
+        description: "Please complete all steps including pickup scheduling and upload at least 1 image",
         variant: "destructive",
       });
       return;
@@ -210,14 +224,16 @@ const CreateOrder = () => {
           user_id: user.id,
           ewaste_type: selectedType as any,
           brand: selectedBrand,
-          image_url: uploadedUrls[0], // Store first image URL
+          image_url: uploadedUrls[0],
           recycler_name: selectedRecycler.name,
           recycler_address: selectedRecycler.address,
           recycler_lat: selectedRecycler.lat,
           recycler_lng: selectedRecycler.lng,
-          status: (isValid ? 'validated' : 'rejected') as any,
+          status: (isValid ? 'scheduled' : 'rejected') as any,
           validation_message: `Confidence: ${confidence}%. ${reason}. Detected brand: ${detectedBrand || 'unknown'}`,
           estimated_amount: estimatedAmount,
+          pickup_date: format(pickupDate, 'yyyy-MM-dd'),
+          pickup_time_slot: pickupSlot,
         }])
         .select()
         .single();
@@ -226,7 +242,7 @@ const CreateOrder = () => {
 
       if (isValid && orderData) {
         setCreatedOrderId(orderData.id);
-        setStep(5); // Move to receipt step
+        setStep(6); // Move to receipt step
       } else {
         toast({
           title: "Order Rejected",
@@ -313,8 +329,88 @@ const CreateOrder = () => {
           </div>
         )}
 
-        {/* Step 4: Upload Image */}
+        {/* Step 4: Schedule Pickup */}
         {step === 4 && (
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Schedule Pickup</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle>Choose a date and time slot</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4" /> Pickup Date
+                  </p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full md:w-[280px] justify-start text-left font-normal",
+                          !pickupDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {pickupDate ? format(pickupDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pickupDate}
+                        onSelect={setPickupDate}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const max = new Date();
+                          max.setDate(max.getDate() + 30);
+                          return date < today || date > max;
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <Clock className="w-4 h-4" /> Time Slot
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {PICKUP_SLOTS.map((slot) => (
+                      <Card
+                        key={slot}
+                        onClick={() => setPickupSlot(slot)}
+                        className={cn(
+                          "cursor-pointer transition-all hover:shadow-md",
+                          pickupSlot === slot && "border-primary border-2 bg-primary/5"
+                        )}
+                      >
+                        <CardContent className="p-4 text-center font-medium">
+                          {slot}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full"
+                  disabled={!pickupDate || !pickupSlot}
+                  onClick={() => setStep(5)}
+                >
+                  Continue
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Step 5: Upload Image */}
+        {step === 5 && (
           <div>
             <h2 className="text-2xl font-semibold mb-4">Upload E-waste Image</h2>
             <Card>
@@ -323,7 +419,7 @@ const CreateOrder = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                     {imagePreviews.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">
                         {imagePreviews.map((preview, idx) => (
@@ -337,7 +433,7 @@ const CreateOrder = () => {
                       </div>
                     ) : (
                       <div>
-                        <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                        <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                         <p className="text-muted-foreground">Upload 1-2 images of your {selectedBrand} {selectedType}</p>
                         <p className="text-xs text-muted-foreground mt-2">Multiple angles help with validation</p>
                       </div>
@@ -378,8 +474,8 @@ const CreateOrder = () => {
           </div>
         )}
 
-        {/* Step 5: Order Receipt */}
-        {step === 5 && createdOrderId && (
+        {/* Step 6: Order Receipt */}
+        {step === 6 && createdOrderId && (
           <div>
             <OrderReceipt orderId={createdOrderId} />
           </div>
