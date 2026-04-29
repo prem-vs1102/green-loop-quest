@@ -97,13 +97,25 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-size: 17px;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.65;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    @apply leading-relaxed;
   }
 }
 
