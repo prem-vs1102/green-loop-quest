@@ -13,32 +13,34 @@ export const Hero = () => {
           alt="E-waste recycling"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/85 to-accent/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-primary/60 to-black/75" />
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-32 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-slide-up">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-            <Recycle className="w-4 h-4 text-white" />
-            <span className="text-sm text-white font-medium">
+          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full border border-white/40 shadow-lg">
+            <Recycle className="w-4 h-4 text-accent" />
+            <span className="text-sm text-white font-semibold tracking-wide">
               Join 10,000+ Eco Warriors
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-            Turn Your E-Waste Into
-            <span className="block mt-2">Eco Credits</span>
+          <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.05] text-shadow-hero">
+            <span className="text-[hsl(48,90%,88%)]">Turn Your E-Waste Into</span>
+            <span className="block mt-3 bg-gradient-to-r from-[hsl(84,90%,70%)] via-[hsl(60,95%,75%)] to-[hsl(142,80%,70%)] bg-clip-text text-transparent">
+              Eco Credits
+            </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white/95 max-w-2xl mx-auto font-medium text-shadow-hero">
             Schedule pickups, track your impact, and earn rewards for recycling electronics responsibly.
             Together, we're building a circular economy.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link to="/auth">
-              <Button variant="hero" size="lg" className="group bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button variant="hero" size="lg" className="group bg-primary text-primary-foreground hover:bg-primary/90 click-pop hover-lift">
                 Start Recycling
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -46,7 +48,7 @@ export const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary"
+              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary click-pop"
             >
               Watch Demo
             </Button>

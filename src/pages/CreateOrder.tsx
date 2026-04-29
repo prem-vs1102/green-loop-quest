@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, Loader2, CalendarIcon, Clock } from "lucide-react";
 import RecyclerMap from "@/components/RecyclerMap";
@@ -110,6 +111,8 @@ const CreateOrder = () => {
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [pickupDate, setPickupDate] = useState<Date | undefined>();
   const [pickupSlot, setPickupSlot] = useState<string>("");
+  const [progress, setProgress] = useState(0);
+  const [progressLabel, setProgressLabel] = useState<string>("");
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
@@ -173,6 +176,8 @@ const CreateOrder = () => {
     }
 
     setUploading(true);
+    setProgress(5);
+    setProgressLabel("Preparing upload...");
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -181,12 +186,14 @@ const CreateOrder = () => {
 
       // Upload all images to Supabase Storage with user folder
       const uploadedUrls: string[] = [];
+      const uploadShare = 60; // % of progress dedicated to uploads
       
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}_${i}.${fileExt}`;
         
+        setProgressLabel(`Uploading image ${i + 1} of ${imageFiles.length}...`);
         const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(fileName, file);
@@ -198,10 +205,13 @@ const CreateOrder = () => {
           .getPublicUrl(fileName);
         
         uploadedUrls.push(publicUrl);
+        setProgress(10 + Math.round(((i + 1) / imageFiles.length) * uploadShare));
       }
 
       // Validate images with AI
       setValidating(true);
+      setProgressLabel("AI is analyzing your images...");
+      setProgress(75);
       const { data: validationData, error: validationError } = await supabase.functions
         .invoke('validate-ewaste-image', {
           body: { 
@@ -212,6 +222,8 @@ const CreateOrder = () => {
         });
 
       if (validationError) throw validationError;
+      setProgress(90);
+      setProgressLabel("Finalizing your order...");
 
       const { isValid, confidence, reason, detectedBrand } = validationData;
       
@@ -240,6 +252,9 @@ const CreateOrder = () => {
 
       if (insertError) throw insertError;
 
+      setProgress(100);
+      setProgressLabel("Done!");
+
       if (isValid && orderData) {
         setCreatedOrderId(orderData.id);
         setStep(6); // Move to receipt step
@@ -258,6 +273,8 @@ const CreateOrder = () => {
         description: "Failed to create order. Please try again.",
         variant: "destructive",
       });
+      setProgress(0);
+      setProgressLabel("");
     } finally {
       setUploading(false);
       setValidating(false);
@@ -468,6 +485,16 @@ const CreateOrder = () => {
                       "Submit Order"
                     )}
                   </Button>
+
+                  {(uploading || validating || progress > 0) && (
+                    <div className="space-y-2 animate-fade-in">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground font-medium">{progressLabel}</span>
+                        <span className="font-semibold text-primary">{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="h-3" />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
