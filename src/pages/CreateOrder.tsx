@@ -111,6 +111,8 @@ const CreateOrder = () => {
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [pickupDate, setPickupDate] = useState<Date | undefined>();
   const [pickupSlot, setPickupSlot] = useState<string>("");
+  const [progress, setProgress] = useState(0);
+  const [progressLabel, setProgressLabel] = useState<string>("");
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
@@ -174,6 +176,8 @@ const CreateOrder = () => {
     }
 
     setUploading(true);
+    setProgress(5);
+    setProgressLabel("Preparing upload...");
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -182,12 +186,14 @@ const CreateOrder = () => {
 
       // Upload all images to Supabase Storage with user folder
       const uploadedUrls: string[] = [];
+      const uploadShare = 60; // % of progress dedicated to uploads
       
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}_${i}.${fileExt}`;
         
+        setProgressLabel(`Uploading image ${i + 1} of ${imageFiles.length}...`);
         const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(fileName, file);
@@ -199,10 +205,13 @@ const CreateOrder = () => {
           .getPublicUrl(fileName);
         
         uploadedUrls.push(publicUrl);
+        setProgress(10 + Math.round(((i + 1) / imageFiles.length) * uploadShare));
       }
 
       // Validate images with AI
       setValidating(true);
+      setProgressLabel("AI is analyzing your images...");
+      setProgress(75);
       const { data: validationData, error: validationError } = await supabase.functions
         .invoke('validate-ewaste-image', {
           body: { 
@@ -213,6 +222,8 @@ const CreateOrder = () => {
         });
 
       if (validationError) throw validationError;
+      setProgress(90);
+      setProgressLabel("Finalizing your order...");
 
       const { isValid, confidence, reason, detectedBrand } = validationData;
       
