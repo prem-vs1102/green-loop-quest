@@ -118,6 +118,14 @@ export type Database = {
         | "keyboard"
         | "mouse"
         | "other"
+        | "ac"
+        | "tv"
+        | "smartwatch"
+        | "microwave"
+        | "washing_machine"
+        | "fridge"
+        | "cooler"
+        | "speaker"
       order_status:
         | "pending"
         | "validated"
@@ -263,6 +271,14 @@ export const Constants = {
         "keyboard",
         "mouse",
         "other",
+        "ac",
+        "tv",
+        "smartwatch",
+        "microwave",
+        "washing_machine",
+        "fridge",
+        "cooler",
+        "speaker",
       ],
       order_status: [
         "pending",
