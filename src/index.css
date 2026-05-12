@@ -99,6 +99,7 @@ All colors MUST be HSL.
 
   html {
     font-size: 17px;
+    scroll-behavior: smooth;
   }
 
   body {
