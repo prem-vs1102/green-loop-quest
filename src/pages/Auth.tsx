@@ -209,7 +209,7 @@ const Auth = () => {
           <p className="text-muted-foreground">Turn your e-waste into rewards</p>
         </div>
 
-        <Card className="shadow-eco-lg border-border/50">
+        <Card className="shadow-eco-lg border-border/50 reveal-zoom-in animate-fade-in">
           <CardHeader>
             <CardTitle className="text-2xl">Welcome</CardTitle>
             <CardDescription>
