@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Package, History, Leaf } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import OrderTracking from "@/components/OrderTracking";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 interface Order {
   id: string;
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollReveal();
 
   useEffect(() => {
     checkUser();
@@ -103,8 +105,8 @@ const Dashboard = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 reveal-on-scroll">
+          <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
@@ -114,7 +116,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Orders</CardTitle>
               <Leaf className="h-4 w-4 text-primary" />
@@ -124,7 +126,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Completed</CardTitle>
               <History className="h-4 w-4 text-muted-foreground" />
@@ -136,12 +138,12 @@ const Dashboard = () => {
         </div>
 
         {/* Create New Order Button - Big & Centered */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-12 reveal-zoom-in">
           <Button
             onClick={() => navigate("/create-order")}
             size="lg"
             variant="hero"
-            className="h-16 px-12 text-xl rounded-2xl shadow-eco-lg"
+            className="h-16 px-12 text-xl rounded-2xl shadow-eco-lg hover-lift click-pop"
           >
             <Plus className="w-7 h-7 mr-3" />
             Create New Order
@@ -149,7 +151,7 @@ const Dashboard = () => {
         </div>
 
         {/* Active Orders */}
-        <div className="mb-8">
+        <div className="mb-8 reveal-on-scroll">
           <h2 className="text-3xl font-bold mb-6">Active Orders</h2>
           {loading ? (
             <p>Loading...</p>
@@ -162,7 +164,7 @@ const Dashboard = () => {
           ) : (
             <div className="grid gap-6">
               {pendingOrders.map((order) => (
-                <Card key={order.id} className="overflow-hidden">
+                <Card key={order.id} className="overflow-hidden hover-lift">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4 flex-wrap gap-3">
                       <div>
@@ -192,7 +194,7 @@ const Dashboard = () => {
         </div>
 
         {/* Previous Orders */}
-        <div>
+        <div className="reveal-on-scroll">
           <h2 className="text-2xl font-bold mb-4">Order History</h2>
           {completedOrders.length === 0 ? (
             <Card>
@@ -203,7 +205,7 @@ const Dashboard = () => {
           ) : (
             <div className="grid gap-4">
               {completedOrders.map((order) => (
-                <Card key={order.id}>
+                <Card key={order.id} className="hover-lift">
                   <CardContent className="py-4">
                     <div className="flex justify-between items-start">
                       <div>

@@ -14,6 +14,7 @@ import RecyclerMap from "@/components/RecyclerMap";
 import OrderReceipt from "@/components/OrderReceipt";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 const PICKUP_SLOTS = [
   "09:00 AM - 11:00 AM",
@@ -164,6 +165,7 @@ const CreateOrder = () => {
   const [pickupSlot, setPickupSlot] = useState<string>("");
   const [progress, setProgress] = useState(0);
   const [progressLabel, setProgressLabel] = useState<string>("");
+  useScrollReveal();
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
