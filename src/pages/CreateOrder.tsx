@@ -31,12 +31,20 @@ const ewasteTypes = [
   { value: "monitor", label: "Monitor", icon: "🖥️" },
   { value: "keyboard", label: "Keyboard", icon: "⌨️" },
   { value: "mouse", label: "Mouse", icon: "🖱️" },
+  { value: "tv", label: "TV", icon: "📺" },
+  { value: "ac", label: "Air Conditioner", icon: "❄️" },
+  { value: "smartwatch", label: "Smart Watch", icon: "⌚" },
+  { value: "microwave", label: "Microwave", icon: "🍲" },
+  { value: "washing_machine", label: "Washing Machine", icon: "🧺" },
+  { value: "fridge", label: "Refrigerator", icon: "🧊" },
+  { value: "cooler", label: "Cooler", icon: "💨" },
+  { value: "speaker", label: "Speaker", icon: "🔊" },
   { value: "other", label: "Other", icon: "📦" },
 ];
 
 const brandsByType: Record<string, string[]> = {
   laptop: [
-    "Dell", "HP", "Lenovo", "Asus", "Acer", "Apple", "MSI", "Razer", 
+    "Dell", "HP", "Lenovo", "Asus", "Acer", "Apple", "MSI", "Razer",
     "Microsoft Surface", "Samsung", "LG", "Toshiba", "Sony", "Alienware",
     "Huawei", "Xiaomi", "Avita", "iBall", "HCL", "Wipro", "Other"
   ],
@@ -65,6 +73,38 @@ const brandsByType: Record<string, string[]> = {
     "Logitech", "Razer", "Microsoft", "HP", "Dell", "Corsair", "SteelSeries",
     "HyperX", "Asus ROG", "Cooler Master", "Redragon", "Zebronics", "Other"
   ],
+  tv: [
+    "Samsung", "LG", "Sony", "TCL", "Panasonic", "Philips", "Mi", "OnePlus",
+    "Vu", "Hisense", "Toshiba", "Sharp", "Sansui", "Onida", "Other"
+  ],
+  ac: [
+    "LG", "Samsung", "Voltas", "Daikin", "Hitachi", "Blue Star", "Carrier",
+    "Panasonic", "Whirlpool", "Mitsubishi", "Lloyd", "Godrej", "Haier", "Other"
+  ],
+  smartwatch: [
+    "Apple Watch", "Samsung", "Fitbit", "Garmin", "Noise", "boAt", "Fire-Boltt",
+    "Amazfit", "Huawei", "Fossil", "OnePlus", "Realme", "Mi", "Other"
+  ],
+  microwave: [
+    "LG", "Samsung", "IFB", "Whirlpool", "Panasonic", "Bajaj", "Godrej",
+    "Morphy Richards", "Bosch", "Sharp", "Other"
+  ],
+  washing_machine: [
+    "LG", "Samsung", "Whirlpool", "IFB", "Bosch", "Godrej", "Haier",
+    "Panasonic", "Voltas Beko", "Onida", "Videocon", "Other"
+  ],
+  fridge: [
+    "LG", "Samsung", "Whirlpool", "Godrej", "Haier", "Bosch", "Panasonic",
+    "Voltas Beko", "Hitachi", "Videocon", "Other"
+  ],
+  cooler: [
+    "Symphony", "Bajaj", "Crompton", "Havells", "Voltas", "Kenstar",
+    "Orient", "Usha", "Maharaja Whiteline", "Other"
+  ],
+  speaker: [
+    "JBL", "Sony", "Bose", "boAt", "Marshall", "Harman Kardon", "Mi",
+    "Philips", "Zebronics", "Logitech", "Sonos", "Other"
+  ],
   other: ["Unknown", "Generic", "Other"]
 };
 
@@ -77,23 +117,34 @@ const calculateEstimatedAmount = (type: string, brand: string): number => {
     monitor: 1000,
     keyboard: 200,
     mouse: 150,
+    tv: 2500,
+    ac: 4000,
+    smartwatch: 600,
+    microwave: 1500,
+    washing_machine: 3500,
+    fridge: 4500,
+    cooler: 1200,
+    speaker: 500,
     other: 500
   };
 
   const brandMultipliers: Record<string, number> = {
     "Apple": 1.5,
+    "Apple Watch": 1.5,
     "Dell": 1.3,
     "HP": 1.2,
     "Samsung": 1.3,
     "Lenovo": 1.2,
     "Sony": 1.3,
+    "LG": 1.25,
+    "Bose": 1.4,
     "Microsoft Surface": 1.4,
     "Other": 0.8
   };
 
   const baseAmount = baseAmounts[type] || 500;
   const multiplier = brandMultipliers[brand] || 1.0;
-  
+
   return Math.round(baseAmount * multiplier);
 };
 
