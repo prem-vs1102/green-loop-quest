@@ -10,6 +10,7 @@ import { Leaf, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { ReCaptcha } from "@/components/ReCaptcha";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 const signUpSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address").max(255),
@@ -29,6 +30,7 @@ const Auth = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
+  useScrollReveal();
 
   // Form states
   const [loginEmail, setLoginEmail] = useState("");
