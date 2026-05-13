@@ -71,18 +71,20 @@ export const CTA = () => {
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold backdrop-blur-sm bg-transparent click-pop"
-                style={{
-                  borderColor: "#B0CA87",
-                  borderWidth: "2px",
-                  color: "#B5DEAD",
-                }}
-              >
-                Contact Sales
-              </Button>
+              <Link to="/contact">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="font-semibold backdrop-blur-sm bg-transparent click-pop"
+                  style={{
+                    borderColor: "#B0CA87",
+                    borderWidth: "2px",
+                    color: "#B5DEAD",
+                  }}
+                >
+                  Contact Sales
+                </Button>
+              </Link>
             </div>
 
             <p
