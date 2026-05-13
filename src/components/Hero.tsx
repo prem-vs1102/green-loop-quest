@@ -45,13 +45,15 @@ export const Hero = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary click-pop"
-            >
-              Watch Demo
-            </Button>
+            <Link to="/how-it-works">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary click-pop"
+              >
+                See How It Works
+              </Button>
+            </Link>
           </div>
 
           {/* Quick Stats */}
