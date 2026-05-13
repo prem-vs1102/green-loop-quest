@@ -54,6 +54,26 @@ const Dashboard = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
+
+      // Auto-complete orders whose pickup date has passed
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const toComplete = (data || []).filter((o: Order) => {
+        if (!o.pickup_date) return false;
+        if (["completed", "cancelled", "rejected"].includes(o.status)) return false;
+        const pickup = new Date(o.pickup_date);
+        pickup.setHours(0, 0, 0, 0);
+        return pickup < today;
+      });
+
+      if (toComplete.length > 0) {
+        await supabase
+          .from("orders")
+          .update({ status: "completed" })
+          .in("id", toComplete.map((o) => o.id));
+        toComplete.forEach((o) => (o.status = "completed"));
+      }
+
       setOrders(data || []);
     } catch (error) {
       console.error("Error fetching orders:", error);
