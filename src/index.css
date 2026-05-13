@@ -180,30 +180,37 @@ All colors MUST be HSL.
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Smooth easing tokens */
+  :root {
+    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   .reveal-on-scroll {
     opacity: 0;
     transform: translateY(24px);
-    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    transition: opacity 0.8s var(--ease-out-soft), transform 0.8s var(--ease-out-soft);
+    will-change: opacity, transform;
   }
-
   .reveal-on-scroll.is-visible {
     opacity: 1;
     transform: translateY(0);
   }
 
   .hover-lift {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.35s var(--ease-out-soft), box-shadow 0.35s var(--ease-out-soft);
+    will-change: transform;
   }
   .hover-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px hsl(var(--primary) / 0.18);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px hsl(var(--primary) / 0.22);
   }
 
   .click-pop {
-    transition: transform 0.12s ease;
+    transition: transform 0.18s var(--ease-spring);
   }
   .click-pop:active {
-    transform: scale(0.96);
+    transform: scale(0.95);
   }
 
   .text-shadow-hero {
@@ -211,12 +218,21 @@ All colors MUST be HSL.
   }
 
   /* Reveal variants */
-  .reveal-fade-left { opacity: 0; transform: translateX(-32px); transition: opacity .7s ease-out, transform .7s ease-out; }
+  .reveal-fade-left { opacity: 0; transform: translateX(-32px); transition: opacity .8s var(--ease-out-soft), transform .8s var(--ease-out-soft); will-change: opacity, transform; }
   .reveal-fade-left.is-visible { opacity: 1; transform: translateX(0); }
-  .reveal-fade-right { opacity: 0; transform: translateX(32px); transition: opacity .7s ease-out, transform .7s ease-out; }
+  .reveal-fade-right { opacity: 0; transform: translateX(32px); transition: opacity .8s var(--ease-out-soft), transform .8s var(--ease-out-soft); will-change: opacity, transform; }
   .reveal-fade-right.is-visible { opacity: 1; transform: translateX(0); }
-  .reveal-zoom-in { opacity: 0; transform: scale(.92); transition: opacity .7s ease-out, transform .7s ease-out; }
+  .reveal-zoom-in { opacity: 0; transform: scale(.94); transition: opacity .7s var(--ease-out-soft), transform .7s var(--ease-spring); will-change: opacity, transform; }
   .reveal-zoom-in.is-visible { opacity: 1; transform: scale(1); }
+
+  /* Global smooth interactions */
+  a, button { transition: color .25s var(--ease-out-soft), background-color .25s var(--ease-out-soft), border-color .25s var(--ease-out-soft), transform .25s var(--ease-out-soft), box-shadow .25s var(--ease-out-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll, .reveal-fade-left, .reveal-fade-right, .reveal-zoom-in {
+      opacity: 1 !important; transform: none !important; transition: none !important;
+    }
+  }
 
   /* Story link underline */
   .story-link {
