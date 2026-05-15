@@ -1,13 +1,13 @@
-About EcoTrack
+About EcoTrack 💚-
 A Mumbai-born platform building India's most accessible e-waste recycling network.
 
-Why we exist
+Why we exist ❓-
 Mumbai produces over 120,000 tonnes of e-waste each year — most of it ends up in informal scrap yards or landfills. We built EcoTrack so any resident can responsibly dispose of an old phone, AC, fridge or laptop in under a minute, and get paid for it.
 
-Our mission
+Our mission 🥅- 
 Make responsible e-waste disposal the default option for every Indian household by 2030 — starting with Mumbai, expanding to Pune, Delhi and Bengaluru next.
 
-How we work
+How we work 🌿 - 
 We partner only with CPCB-authorised recyclers, verify every pickup with AI, and publish quarterly impact reports so our community can see exactly where their devices end up.
 
 # 🌿 Green Loop Quest
